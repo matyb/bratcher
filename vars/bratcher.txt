@@ -1,0 +1,10 @@
+# A simple branch matching library for Jenkins Pipeline libraries
+
+#### String curl(url, [branches], [curlArgs], [branchNotFoundFn])
+> returns string from GETting a resource when found, error if not 200 response. replaces $branch in url text with optional branch names (defaults to env.BRANCH_NAME)
+
+branches to retry when errored in order of retry, defaults to env.BRANCH_NAME if not provided.
+
+takes curl args, defaults to -x GET
+
+takes branch not found function, defaults to function that retries curl with next branch

@@ -1,0 +1,5 @@
+build
+.gradle
+**/*.swp
+**/.swo
+**/.*fuse_hidden*

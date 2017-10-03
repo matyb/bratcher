@@ -1,0 +1,24 @@
+#! groovy
+apply plugin: 'groovy'
+sourceSets.main.groovy {
+  srcDirs = ['src']
+}
+sourceSets.test.groovy {
+  srcDirs = ['test']
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.4'
+    testCompile(
+      'junit:junit:4.12',
+      'org.codehaus.groovy:groovy-all:2.4.4',
+      'org.spockframework:spock-core:1.0-groovy-2.4'
+    )
+}

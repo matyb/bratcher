@@ -7,7 +7,7 @@ class Bratcher {
       try {
         url = url.replace('$branch', branches.head())
         def val = sh(returnStdout: true, script: "curl " + curlArgs + " '$url'")
-        echo  "curling '$url' returns '$val'".toString()
+        println  "curling '$url' returns '$val'".toString()
         val
       } catch (Exception x) {
         if(continueFn(branches.head(), x)){

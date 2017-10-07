@@ -7,12 +7,11 @@ class BratcherSpec extends Specification {
 
     given:
     def bratcher = new Bratcher(){
-      def env = [ BRANCH_NAME: 'develop']
       def sh(cmd) { commands += cmd }
     }
 
     when:
-    def response = bratcher.curl("")
+    def response = bratcher.curl("",['branch'])
 
     then:
     [[returnStdout:true, script: 'curl -X GET \'\'']] == commands
@@ -23,12 +22,11 @@ class BratcherSpec extends Specification {
 
     given:
     def bratcher = new Bratcher(){
-      def env = [ BRANCH_NAME: 'develop']
       def sh(cmd) { commands += cmd }
     }
 
     when:
-    bratcher.curl('https://github.com/name/repo/tree/$branch/file.txt')
+    bratcher.curl('https://github.com/name/repo/tree/$branch/file.txt', ['develop'])
 
     then:
     [[returnStdout: true, script: "curl -X GET 'https://github.com/name/repo/tree/develop/file.txt'"]] == commands

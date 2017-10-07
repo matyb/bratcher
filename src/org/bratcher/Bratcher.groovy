@@ -2,7 +2,7 @@ package org.bratcher
 
 class Bratcher {
 
-  def curl(url, branches = [env.BRANCH_NAME], curlArgs = '-X GET', continueFn = { branch, exception -> true}){
+  def curl(url, branches, curlArgs = '-X GET', continueFn = { branch, exception -> true}){
     if(!branches?.empty){
       try {
         url = url.replace('$branch', branches.head())

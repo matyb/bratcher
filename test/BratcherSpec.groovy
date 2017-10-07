@@ -1,4 +1,3 @@
-package org.bratcher
 import spock.lang.*
 
 class BratcherSpec extends Specification {
@@ -7,15 +6,18 @@ class BratcherSpec extends Specification {
 
     given:
     def bratcher = new Bratcher(){
-      def env = [ BRANCH_NAME: 'develop']
-      def sh(cmd) { commands += cmd }
+      def sh(cmd) {
+        commands += cmd
+        return "{}"
+      }
     }
 
     when:
-    def response = bratcher.curl("")
+    def response = bratcher.curl("",['branch'])
 
     then:
     [[returnStdout:true, script: 'curl -X GET \'\'']] == commands
+    '{}' == response
   }
 
   def "curling file that exists on branch"() {
@@ -23,15 +25,18 @@ class BratcherSpec extends Specification {
 
     given:
     def bratcher = new Bratcher(){
-      def env = [ BRANCH_NAME: 'develop']
-      def sh(cmd) { commands += cmd }
+      def sh(cmd) {
+        commands += cmd
+        return "{}"
+      }
     }
 
     when:
-    bratcher.curl('https://github.com/name/repo/tree/$branch/file.txt')
+    def response = bratcher.curl('https://github.com/name/repo/tree/$branch/file.txt', ['develop'])
 
     then:
     [[returnStdout: true, script: "curl -X GET 'https://github.com/name/repo/tree/develop/file.txt'"]] == commands
+    "{}" == response
   }
 
 }

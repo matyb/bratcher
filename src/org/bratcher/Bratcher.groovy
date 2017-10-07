@@ -5,7 +5,10 @@ class Bratcher {
   def curl(url, branches = [env.BRANCH_NAME], curlArgs = '-X GET', continueFn = { branch, exception -> true}){
     if(!branches?.empty){
       try {
-        sh(returnStdout: true, script: "curl " + curlArgs + " '${url.replace('$branch', branches.head())}'")
+        url = url.replace('$branch', branches.head())
+        def val = sh(returnStdout: true, script: "curl " + curlArgs + " '$url'")
+        echo "curling '$url' returns '$val'"
+        val
       } catch (Exception x) {
         if(continueFn(branches.head(), x)){
           curl(url, branches.tail(), curlArgs, continueFn)

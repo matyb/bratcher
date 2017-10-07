@@ -1,4 +1,3 @@
-package org.bratcher
 import spock.lang.*
 
 class BratcherSpec extends Specification {

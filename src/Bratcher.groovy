@@ -6,7 +6,8 @@ def String curl(url, branches, curlArgs = '-f -X GET', continueFn = { branch, ex
       return val
     } catch (Exception x) {
       if(continueFn(branches.head(), x)){
-        echo "exception response... ${branches.tail()}".toString()
+        echo """file not found on branch '${branches.head()}', 
+               |trying next branch '${branches.tail().size() > 0 ? branches.tail().head() : null}'""".stripMargin().toString()
         curl(url, branches.tail(), curlArgs, continueFn)
       }
     }

@@ -1,2 +1,2 @@
 language: groovy
-script: ./gradlew clean assemble test
+script: gradle clean assemble test

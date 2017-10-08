@@ -1,3 +1,2 @@
 language: groovy
-before_install: chmod +x gradlew
-script: ./gradlew clean assemble test
+script: gradle clean assemble test

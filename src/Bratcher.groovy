@@ -1,8 +1,8 @@
 def String curl(url, branches, curlArgs = '-f -X GET', continueFn = { branch, exception -> true}){
   if(!branches?.empty){
     try {
-      url = url.replace('$branch', branches.head())
-      def val = sh(returnStdout: true, script: "curl " + curlArgs + " '$url'")
+      subUrl = url.replace('$branch', branches.head())
+      def val = sh(returnStdout: true, script: "curl " + curlArgs + " '$subUrl'")
       if(!val || val.isEmpty()){
         if(continueFn(branches.head(), x)){
           echo "empty response... ${branches.tail()}"

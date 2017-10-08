@@ -16,7 +16,7 @@ class BratcherSpec extends Specification {
     def response = bratcher.curl("",['branch'])
 
     then:
-    [[returnStdout:true, script: 'curl -X GET \'\'']] == commands
+    [[returnStdout:true, script: 'curl -f -X GET \'\'']] == commands
     '{}' == response
   }
 
@@ -35,7 +35,7 @@ class BratcherSpec extends Specification {
     def response = bratcher.curl('https://github.com/name/repo/tree/$branch/file.txt', ['develop'])
 
     then:
-    [[returnStdout: true, script: "curl -X GET 'https://github.com/name/repo/tree/develop/file.txt'"]] == commands
+    [[returnStdout: true, script: "curl -f -X GET 'https://github.com/name/repo/tree/develop/file.txt'"]] == commands
     "{}" == response
   }
 

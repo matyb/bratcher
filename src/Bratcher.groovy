@@ -1,4 +1,4 @@
-def String curl(url, branches, curlArgs = '-X GET', continueFn = { branch, exception -> true}){
+def String curl(url, branches, curlArgs = '-f -X GET', continueFn = { branch, exception -> true}){
   if(!branches?.empty){
     try {
       url = url.replace('$branch', branches.head())

@@ -139,7 +139,6 @@ class BratcherSpec extends Specification {
     def bratcher = new Bratcher(){
       def sh(cmd) {
         commands += cmd
-        println cmd
         return responses[cmd].pop()
       }
       def echo = { x -> println x }
@@ -157,5 +156,65 @@ class BratcherSpec extends Specification {
                  [returnStdout: true, script: 'ls -la'],
                  [returnStatus: true, script: 'git checkout branch-found']]
     wds == []
+  }
+
+  def "checks out branch until it finds one, changes wd"() {
+    def commands = []
+    def responses = [[returnStdout: true, script: 'ls -la']: "drwxrwxr-- 1 meh meh    1234 Jan  3 12:34 git-repo",
+                     [returnStatus: true, script: 'git checkout branch-not-found']: 1,
+                     [returnStatus: true, script: 'git checkout branch-found']: 0 ]
+
+    def wds = ['git-repo']
+
+    given:
+    def bratcher = new Bratcher(){
+      def sh(cmd) {
+        commands += cmd
+        println "cmd: !!!! $cmd"
+        return responses[cmd]
+      }
+      def echo = { x -> println x }
+      def cwd = { wd ->
+        assert wd == wds.pop()
+      }
+    }
+
+    when:
+    def response = bratcher.checkout('git-repo', ['branch-not-found', 'branch-found'])
+
+    then:
+    commands == [[returnStdout: true, script: 'ls -la'], 
+                 [returnStatus: true, script: 'git checkout branch-not-found'],
+                 [returnStatus: true, script: 'git checkout branch-found']]
+    wds == []
+  }
+
+  def "throws exception if no branch found"() {
+    def commands = []
+    def responses = [[returnStdout: true, script: 'ls -la']: "drwxrwxr-- 1 meh meh    1234 Jan  3 12:34 git-repo",
+                     [returnStatus: true, script: 'git checkout branch-not-found']: 1 ]
+
+    def wds = ['git-repo']
+
+    given:
+    def bratcher = new Bratcher(){
+      def sh(cmd) {
+        commands += cmd
+        println "cmd: !!!! $cmd"
+        return responses[cmd]
+      }
+      def echo = { x -> println x }
+      def cwd = { wd ->
+        assert wd == wds.pop()
+      }
+    }
+
+    when:
+    def response = bratcher.checkout('git-repo', ['branch-not-found'])
+
+    then:
+    commands == [[returnStdout: true, script: 'ls -la'], 
+                 [returnStatus: true, script: 'git checkout branch-not-found']]
+    thrown NoSuchElementException
   }
 }

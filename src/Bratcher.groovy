@@ -19,7 +19,12 @@ def checkout(repoName, branches, remotePath = 'https://github.com') {
   def folder = output.split("\n").findAll { it.startsWith("d") && it.endsWith(" $repoName") }
   if(folder.size() > 0) {
     cwd repoName
-    sh(returnStatus: true, script: 'git checkout ' + branches.head())
+    def co = { return sh(returnStatus: true, script: "git checkout $it".toString()) }
+    def status = co(branches.head())
+    while(status != 0) {
+      branches = branches.tail()
+      status = co(branches.head())
+    }
   } else {
     sh "git clone $remotePath/$repoName"
     return checkout(repoName, branches)

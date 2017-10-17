@@ -13,3 +13,15 @@ def String curl(url, branches, curlArgs = '-f -X GET', continueFn = { branch, ex
     }
   }
 }
+
+def checkout(repoName, branches, remotePath = 'https://github.com') {
+  def output = sh(returnStdout: true, script: 'ls -la')
+  def folder = output.split("\n").findAll { it.startsWith("d") && it.endsWith(" $repoName") }
+  if(folder.size() > 0) {
+    cwd repoName
+    sh(returnStatus: true, script: 'git checkout ' + branches.head())
+  } else {
+    sh "git clone $remotePath/$repoName"
+    return checkout(repoName, branches)
+  }
+}

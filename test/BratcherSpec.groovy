@@ -99,4 +99,63 @@ class BratcherSpec extends Specification {
     [[returnStdout: true, script: "curl -f -X GET 'https://github.com/name/repo/tree/develop/file.txt'"]] == commands
     null == response
   }
+
+  def "reuses repo, checks out branch, changes wd"() {
+    def commands = []
+    def responses = [[returnStdout: true, script: 'ls -la']: "drwxrwxr-- 1 meh meh    1234 Jan  3 12:34 git-repo",
+                     [returnStatus: true, script: 'git checkout branch-found']: 0]
+    def wds = ['git-repo']
+
+    given:
+    def bratcher = new Bratcher(){
+      def sh(cmd) {
+        commands += cmd
+        return responses[cmd]
+      }
+      def echo = { x -> println x }
+      def cwd = { wd ->
+        assert wd == wds.pop()
+      }
+    }
+
+    when:
+    def response = bratcher.checkout('git-repo', ['branch-found'])
+
+    then:
+    commands == responses.keySet() as ArrayList
+    wds == []
+  }
+
+  def "clones repo, checks out branch, changes wd"() {
+    def commands = []
+    def responses = [[returnStdout: true, script: 'ls -la']: 
+                                                    ["drwxrwxr-- 1 meh meh    1234 Jan  3 12:34 git-repo",
+                                                     "lrwxrwxr-- 1 meh meh    1234 Jan  3 12:34 not-git-repo"],
+                     [returnStatus: true, script: 'git checkout branch-found']: [0],
+                     'git clone https://github.com/git-repo': ['']]
+    def wds = ['git-repo']
+
+    given:
+    def bratcher = new Bratcher(){
+      def sh(cmd) {
+        commands += cmd
+        println cmd
+        return responses[cmd].pop()
+      }
+      def echo = { x -> println x }
+      def cwd = { wd ->
+        assert wd == wds.pop()
+      }
+    }
+
+    when:
+    def response = bratcher.checkout('git-repo', ['branch-found'])
+
+    then:
+    commands == [[returnStdout: true, script: 'ls -la'], 
+                 'git clone https://github.com/git-repo',
+                 [returnStdout: true, script: 'ls -la'],
+                 [returnStatus: true, script: 'git checkout branch-found']]
+    wds == []
+  }
 }

@@ -1,0 +1,3 @@
+# checkout a git branch with failsafes
+
+equivalent of cloning or reusing a repo and checking out branches until one is found

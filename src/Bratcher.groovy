@@ -1,13 +1,15 @@
-def String curl(url, branches, curlArgs = '-f -X GET', continueFn = { branch, exception -> true}){
-  if(!branches?.empty){
-    try {
-      subUrl = url.replace('$branch', branches.head())
-      def val = sh(returnStdout: true, script: "curl " + curlArgs + " '$subUrl'")
-      return val
-    } catch (Exception x) {
-      if(continueFn(branches.head(), x)){
-        echo """file not found on branch '${branches.head()}', 
-               |trying next branch '${branches.tail().size() > 0 ? branches.tail().head() : null}'""".stripMargin().toString()
+def String curl(url, branches = [], curlArgs = '-f -X GET', continueFn = { branch, exception -> true}){
+  def branchName
+  try {
+    branchName = branches.size() > 0 ? branches.head() : ""
+    subUrl = url.replace('$branch', branchName)
+    def val = sh(returnStdout: true, script: "curl $curlArgs '$subUrl'")
+    return val
+  } catch (Exception x) {
+    if(continueFn(branchName, x)){
+      echo """file not found on branch '$branchName',
+             |trying next branch '${branches.size() > 1 ? branches.tail().head() : null}'""".stripMargin().toString()
+      if(branches.size() > 1){
         curl(url, branches.tail(), curlArgs, continueFn)
       }
     }

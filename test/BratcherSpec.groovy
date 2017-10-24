@@ -100,6 +100,24 @@ class BratcherSpec extends Specification {
     null == response
   }
 
+  def "curls plain urls too"() {
+    def commands = []
+
+    given:
+    def bratcher = new Bratcher(){
+      def sh(cmd){
+        commands += cmd
+      }
+    }
+
+    when:
+    bratcher.curl('https://someurl.com/whatever?youknow')
+
+    then:
+    println commands
+    commands == [[returnStdout: true, script: "curl -f -X GET 'https://someurl.com/whatever?youknow'"]]
+  }
+
   def "reuses repo, checks out branch, changes wd"() {
     def commands = []
     def responses = [[returnStdout: true, script: 'ls -la']: "drwxrwxr-- 1 meh meh    1234 Jan  3 12:34 git-repo",
@@ -217,4 +235,5 @@ class BratcherSpec extends Specification {
                  [returnStatus: true, script: 'git checkout branch-not-found']]
     thrown NoSuchElementException
   }
+
 }
